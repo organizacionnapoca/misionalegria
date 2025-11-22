@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Verificación de Certificado NAPOCA</title>
+  <style>
+    :root {
+      --primary: #1B5E20;
+      --primary-light: #2E7D32;
+      --secondary: #4CAF50;
+      --secondary-light: #81C784;
+      --accent: #FF9800;
+      --background: #f5f5f5;
+      --text: #1B5E20;
+      --text-light: #388E3C;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      display: flex;
+      max-width: 1200px;
+      width: 100%;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    
+    .info-panel {
+      flex: 1;
+      padding: 30px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .certificate-panel {
+      flex: 1.2;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+    
+    .logo-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+    
+    h1 {
+      font-size: 32px;
+      margin-bottom: 15px;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-weight: 700;
+    }
+    
+    h2 {
+      font-size: 26px;
+      margin: 20px 0 10px;
+      color: var(--text);
+      font-weight: 600;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.25);
+      padding: 10px 18px;
+      border-radius: 50px;
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 18px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .certificate-info {
+      margin: 25px 0;
+    }
+    
+    .info-item {
+      margin: 15px 0;
+      display: flex;
+    }
+    
+    .info-label {
+      font-weight: 700;
+      min-width: 110px;
+      font-size: 16px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .info-value {
+      font-weight: 500;
+      font-size: 16px;
+    }
+    
+    .certificate-view {
+      width: 100%;
+      max-width: 350px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin: 20px 0;
+    }
+    
+    .certificate-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-secondary {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #FFB74D;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .signature {
+      margin-top: 35px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      padding-top: 25px;
+    }
+    
+    .signature-name {
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 10px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .signature-title {
+      font-style: italic;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    
+    .error-message {
+      background: #ffebee;
+      color: #d32f2f;
+      padding: 18px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .organization-name {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .organization-full {
+      font-size: 15px;
+      opacity: 0.95;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    
+    .participant-name {
+      font-size: 28px;
+      font-weight: 800;
+      color: #000000;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .certificate-type {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 15px;
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .certificate-id {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .info-panel, .certificate-panel {
+        padding: 25px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      
+      .info-panel, .certificate-panel {
+        padding: 20px;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .btn {
+        justify-content: center;
+      }
+      
+      .logo-container {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .logo-text {
+        margin-top: 10px;
+      }
+      
+      h1 {
+        font-size: 26px;
+      }
+      
+      h2 {
+        font-size: 22px;
+      }
+      
+      .participant-name {
+        font-size: 22px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="info-panel">
+      <div class="logo-container">
+        <img src="logo.png" alt="Logo NAPOCA" class="logo-img">
+        <div class="logo-text">
+          <div class="organization-name">NAPOCA</div>
+          <div class="organization-full">Nacionalidades y Pueblos Originarios Campesinos Amazónicos de Napo</div>
+        </div>
+      </div>
+      
+      <h1>Verificación de Certificado</h1>
+      
+      <div id="contenido">
+        <div class="status-badge">
+          <div class="loading"></div>
+          <span>Verificando certificado...</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="certificate-panel">
+      <h2>Certificado de Participación</h2>
+      
+      <div class="certificate-view">
+        <div style="background: #f5f5f5; padding: 40px; text-align: center; border: 2px dashed #ccc;">
+          <p>Vista previa del certificado</p>
+          <p>Se cargará automáticamente después de la verificación</p>
+        </div>
+      </div>
+      
+      <div class="btn-group" id="btnGroup">
+        <!-- Los botones se generarán dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function verificarCertificado() {
+      const params = new URLSearchParams(window.location.search);
+      const codigo = params.get('codigo');
+      const contenido = document.getElementById('contenido');
+      const btnGroup = document.getElementById('btnGroup');
+      const certificateView = document.querySelector('.certificate-view');
+      
+      if (!codigo) {
+        contenido.innerHTML = `
+          <div class="error-message">
+            <p>⚠️ Agrega ?codigo=... en la URL.</p>
+            <p>Ejemplo: ?codigo=MA001</p>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const response = await fetch('certificadosnapoca.json');
+        
+        if (!response.ok) {
+          throw new Error(`Error al cargar el archivo JSON: ${response.status}`);
+        }
+        
+        const text = await response.text();
+        let data;
+        
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          throw new Error('El archivo JSON tiene errores de sintaxis. Verifica el formato.');
+        }
+        
+        // Si el JSON es un array, buscamos por código
+        const cert = Array.isArray(data) ? 
+          data.find(x => x.codigo === codigo) : 
+          (data.codigo === codigo ? data : null);
+
+        if (!cert) {
+          contenido.innerHTML = `
+            <div class="error-message">
+              <p>❌ Certificado no encontrado.</p>
+              <p>El código <strong>${escapeHtml(codigo)}</strong> no es válido.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Actualizar el contenido
+        contenido.innerHTML = `
+          <div class="status-badge">
+            <span>✅</span>
+            <span>Certificado válido</span>
+          </div>
+          
+          <div class="certificate-type">Certificado de Participación</div>
+          
+          <div class="certificate-info">
+            <div class="participant-name">${escapeHtml(cert.nombres)} ${escapeHtml(cert.apellidos || '')}</div>
+            
+            <div class="info-item">
+              <div class="info-label">Código:</div>
+              <div class="info-value">${escapeHtml(cert.codigo)}</div>
+            </div>
+            
+            <div class="certificate-id">ID: NAPOCA-${escapeHtml(cert.codigo)}</div>
+          </div>
+          
+          <div class="signature">
+            <div class="signature-name">${escapeHtml(cert.presidente_napoca || '')}</div>
+            <div class="signature-title">Presidente/a</div>
+          </div>
+        `;
+
+        // Actualizar la vista del certificado
+        const imageUrl = `imagenes/${codigo}.png`;
+        const drivePreview = cert.driveId
+          ? `https://drive.google.com/file/d/${cert.driveId}/preview`
+          : null;
+        const driveDownload = cert.driveId
+          ? `https://drive.google.com/uc?export=download&id=${cert.driveId}`
+          : null;
+
+        // Cargar imagen local
+        const img = document.createElement('img');
+        img.className = 'certificate-img';
+        img.alt = `Certificado de ${cert.nombres} ${cert.apellidos}`;
+        img.src = imageUrl;
+
+        img.onload = () => {
+          certificateView.innerHTML = '';
+          certificateView.appendChild(img);
+        };
+
+        img.onerror = () => {
+          if (drivePreview) {
+            certificateView.innerHTML = `
+              <iframe class="certificate-img" src="${drivePreview}" width="100%" height="300" frameborder="0"></iframe>
+            `;
+          } else {
+            certificateView.innerHTML = `
+              <div style="background: #f5f5f5; padding: 40px; text-align: center; border: 2px dashed #ccc;">
+                <p>Vista previa del certificado no disponible</p>
+                <p>Utilice los botones para ver o descargar el certificado completo</p>
+              </div>
+            `;
+          }
+        };
+
+        // Actualizar botones
+        btnGroup.innerHTML = '';
+        if (drivePreview) {
+          btnGroup.innerHTML += `
+            <a href="${drivePreview}" target="_blank" class="btn btn-primary">
+              <span>🔍</span>
+              <span>Ver certificado completo</span>
+            </a>
+          `;
+        }
+        if (driveDownload) {
+          btnGroup.innerHTML += `
+            <a href="${driveDownload}" class="btn btn-secondary">
+              <span>⬇️</span>
+              <span>Descargar PDF</span>
+            </a>
+          `;
+        }
+
+      } catch(err) {
+        contenido.innerHTML = `
+          <div class="error-message">
+            <p>⚠️ Error al verificar el certificado</p>
+            <p>${escapeHtml(err.message)}</p>
+            <p>Verifica que el archivo JSON esté bien formado</p>
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Iniciar la verificación cuando se carga la página
+    document.addEventListener('DOMContentLoaded', verificarCertificado);
+  </script>
+</body>
+</html>
